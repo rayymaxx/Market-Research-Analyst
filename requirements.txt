@@ -1,0 +1,12 @@
+langchain 
+langchain-core
+langchain-community
+langserve
+uvicorn 
+fastapi
+requests
+dotenv
+
+
+
+
