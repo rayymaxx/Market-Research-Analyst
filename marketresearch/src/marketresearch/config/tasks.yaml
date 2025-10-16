@@ -1,17 +1,136 @@
-research_task:
+# Research Manager Task
+research_planning_task:
   description: >
-    Conduct a thorough research about {topic}
-    Make sure you find any interesting and relevant information given
-    the current year is {current_year}.
+    Analyze the research request: "{research_request}"
+    Break it down into 3-5 specific data collection and analysis tasks.
+    Assign each task to the appropriate specialist agent.
+    Define clear success criteria for each task.
   expected_output: >
-    A list with 10 bullet points of the most relevant information about {topic}
-  agent: researcher
+    A structured research plan with:
+    - 3-5 specific tasks with descriptions
+    - Assignment of each task to the right agent.
+    - Clear success criteria for each task.
+    - Timeline estimates
+  agent: seniorResearchDirector
 
-reporting_task:
+quality_assurance_task:
   description: >
-    Review the context you got and expand each topic into a full section for a report.
-    Make sure the report is detailed and contains any and all relevant information.
+    Review all the findings from the specialised agents. Validate data quality, check for inconsistencies, ensure methodologies are sound. Synthesize all insights into a cohesive strategic framework.
   expected_output: >
-    A fully fledged report with the main topics, each with a full section of information.
-    Formatted as markdown without '```'
-  agent: reporting_analyst
+    Quality assurance report with:
+    - Data validation results
+    - Methodology review and consistency checks
+    - Synthesis of all findings
+    - Identified gaps or contradictions
+  agent: seniorResearchDirector
+
+
+# Market Data Collector Tasks 
+competitor_data_collection_task:
+  description: >
+    For company/industry: "{research_topic}", collect comprehensive data on:
+    1. Top 3-5 competitors and their market positioning
+    2. Product features and pricing structures
+    3. Recent news and announcements
+    4. Customer reviews and sentiment indicators
+    5. Financial performance indicators (if public company)
+    6. Market trends and growth projections
+  expected_output: >
+    A structured dataset containing:
+    - Competitor profiles with key attributes
+    - Feature comparison matrix
+    - Pricing analysis
+    - Recent news and announcements timeline
+    - Customer reviews and sentiment summary
+  agent: digitalIntelligenceGatherer
+
+market_trends_collection_task:
+  description: >
+    Gather data on industry trends for: "{research_topic}"
+    Focus on:
+    1. Market size and growth rate estimates
+    2. Emerging technologies or business models
+    3. Regulatory changes, government policies or market dynamics
+    4. Consumer behavior shifts and patterns
+    5. Investment and funding patterns
+  expected_output: >
+    Market trends report with:
+    - Market sizing data from multiple sources
+    - Emerging trend analysis 
+    - Regulatory and market dynamics
+    - Consumer behavior and patterns
+    - Investment and funding patterns
+  agent: digitalIntelligenceGatherer
+
+# Data Analyst Task
+swot_analysis_task:
+  description: >
+    Perform comprehensive SWOT analysis using the collected market data.
+    Identify:
+    - Strengths: Competitive advantages, unique capabilities
+    - Weaknesses: Gaps, vulnerabilities, cost disadvantages, potential threats, limitations
+    - Opportunities: Market gaps, emerging trends, unmet needs
+    - Threats: Competitive moves, market shifts, regulatory risks
+  expected_output: >
+    Detailed SWOT analysis with:
+    - 5-7 items per category with evidence
+    - Impact assessment for each items
+    - Data sources and confidence levels
+  agent: quantitativeInsightsSpecialist
+
+competitive_benchmarking_task:
+  description: >
+    Create competitive benchmarching matrix comparing key players on:
+    1. Product features and capabilities
+    2. Pricing and value proposition
+    3. Market presence and brand strength 
+    4. Innovation and technology adoption
+    5. Customer satisfaction and retention
+  expected_output: >
+    Competitive benchmarking report with:
+    - Weighted scoring matrix 
+    - Feature-by-feature comparison
+    - Market positioning map
+    - Competitive advantage analysis 
+    - Data sources and confidence levels
+  agent: quantitativeInsightsSpecialist
+
+
+# Reporting Speialist Tasks 
+executive_summary_task:
+  description: >
+    Create an executive summary for C-level stakeholders based on all research findings.
+    Focus on:
+    1. Key insights and implications
+    2. Strategic recommendations
+    3. Potential risks and mitigation strategies
+    4. Future prospects and growth projections
+    5. Required actions and investments
+  expected_output: >
+    1-page executive summary with:
+    - Key findings (3-5 bullet points)
+    - Strategic recommendations (prioritized)
+    - Risk assessment matrix
+    - Implementation roadmap
+  agent: strategicCommunicationsExpert
+
+comprehensive_report_task:
+  description: >
+    Create a comprehensive research report including:
+    1. Market overview and competitive landscape
+    2. Detailed SWOT analysis
+    3. Competitive benchmarking 
+    4. Strategic recommendations
+    5. Implementation guidance
+  expected_output: >
+    5-10 page comprehensive report with:
+    - Executive summary
+    - Detailed analysis sections
+    - Data visualizations 
+    - Actionable recommendations
+    - Appendices with raw data 
+  agent: strategicCommunicationsExpert
+
+
+
+
