@@ -1,136 +1,316 @@
-# Research Manager Task
+# Research Manager Tasks
 research_planning_task:
   description: >
-    Analyze the research request: "{research_request}"
-    Break it down into 3-5 specific data collection and analysis tasks.
-    Assign each task to the appropriate specialist agent.
-    Define clear success criteria for each task.
+    Analyze: "{research_request}"
+    
+    CREATE a research plan with EXACT steps:
+    1. Data Collection Phase (Market Data Collector):
+       - Competitor identification and profiling
+       - Market trends and size data gathering
+    
+    2. Analysis Phase (Data Analyst):
+       - SWOT analysis after data collection completes
+       - Competitive benchmarking using collected data
+    
+    3. Reporting Phase (Reporting Specialist):
+       - Executive summary after analysis completes
+       - Comprehensive report as final deliverable
+    
+    Assign each phase to the correct agent with clear handoffs.
   expected_output: >
-    A structured research plan with:
-    - 3-5 specific tasks with descriptions
-    - Assignment of each task to the right agent.
-    - Clear success criteria for each task.
-    - Timeline estimates
+    RESEARCH PLAN:
+    Phase 1: Data Collection (Market Data Collector)
+    - Task: competitor_data_collection_task
+    - Task: market_trends_collection_task
+    - Success: Complete dataset on 3-5 competitors + market trends
+    
+    Phase 2: Analysis (Data Analyst) 
+    - Task: swot_analysis_task (depends on Phase 1 completion)
+    - Task: competitive_benchmarking_task (depends on Phase 1 completion)
+    - Success: Quantified insights with evidence
+    
+    Phase 3: Reporting (Reporting Specialist)
+    - Task: executive_summary_task (depends on Phase 2 completion)
+    - Task: comprehensive_report_task (depends on Phase 2 completion)
+    - Success: Stakeholder-ready deliverables
   agent: seniorResearchDirector
 
 quality_assurance_task:
   description: >
-    Review all the findings from the specialised agents. Validate data quality, check for inconsistencies, ensure methodologies are sound. Synthesize all insights into a cohesive strategic framework.
+    VALIDATE all research outputs for:
+    - Data consistency across sources
+    - Analytical rigor in SWOT and benchmarking
+    - Actionability of recommendations
+    - Absence of contradictory findings
+    
+    Specifically check:
+    1. Competitor data covers same time period
+    2. SWOT items have supporting evidence
+    3. Recommendations are specific and implementable
+    4. Executive summary accurately reflects detailed findings
   expected_output: >
-    Quality assurance report with:
-    - Data validation results
-    - Methodology review and consistency checks
-    - Synthesis of all findings
-    - Identified gaps or contradictions
+    QUALITY ASSURANCE REPORT:
+    - Data Quality Score: [X/10] with specific issues noted
+    - Analytical Consistency: [Pass/Fail] with validation details
+    - Recommendation Actionability: [High/Medium/Low] assessment
+    - Required Corrections: [List of specific fixes needed]
   agent: seniorResearchDirector
+  context: [competitor_data_collection_task, market_trends_collection_task, swot_analysis_task, competitive_benchmarking_task]
 
-
-# Market Data Collector Tasks 
+# Market Data Collector Tasks
 competitor_data_collection_task:
   description: >
-    For company/industry: "{research_topic}", collect comprehensive data on:
-    1. Top 3-5 competitors and their market positioning
-    2. Product features and pricing structures
-    3. Recent news and announcements
-    4. Customer reviews and sentiment indicators
-    5. Financial performance indicators (if public company)
-    6. Market trends and growth projections
+    GATHER SPECIFIC data on "{research_topic}" competitors:
+    
+    METHODOLOGY:
+    1. Identify 3-5 main competitors using:
+       - Industry directories and "companies like" searches
+       - Social media following and market presence
+       - Product similarity analysis
+    
+    2. For EACH competitor, collect these EXACT data points:
+       - Company: Name, website, founding year, employee range
+       - Products: Core offerings, key features, pricing tiers
+       - Market: Target customers, geographic presence, market share estimates
+       - Performance: Recent news, funding rounds, growth indicators
+       - Digital Presence: Social media stats, review ratings
+    
+    3. Use FREE data sources:
+       - Company websites (scrape About, Product, Pricing pages)
+       - LinkedIn/Crunchbase for company info
+       - Product review sites (G2, Capterra if available)
+       - News APIs for recent announcements
   expected_output: >
-    A structured dataset containing:
-    - Competitor profiles with key attributes
-    - Feature comparison matrix
-    - Pricing analysis
-    - Recent news and announcements timeline
-    - Customer reviews and sentiment summary
+    STRUCTURED COMPETITOR DATASET (JSON format):
+    {
+      "competitors": [
+        {
+          "name": "Competitor A",
+          "website": "url",
+          "founding_year": "YYYY", 
+          "employee_range": "e.g., 50-100",
+          "core_products": ["list", "of", "offerings"],
+          "pricing_tiers": {"basic": "$X", "premium": "$Y"},
+          "target_market": "description",
+          "recent_news": ["headline1", "headline2"],
+          "social_presence": {"twitter_followers": X, "linkedin": Y}
+        }
+      ],
+      "data_sources": ["source1", "source2"],
+      "collection_date": "YYYY-MM-DD"
+    }
   agent: digitalIntelligenceGatherer
 
 market_trends_collection_task:
   description: >
-    Gather data on industry trends for: "{research_topic}"
-    Focus on:
-    1. Market size and growth rate estimates
-    2. Emerging technologies or business models
-    3. Regulatory changes, government policies or market dynamics
-    4. Consumer behavior shifts and patterns
-    5. Investment and funding patterns
+    COLLECT market intelligence on "{research_topic}" trends:
+    
+    FOCUS AREAS:
+    1. Market Size & Growth:
+       - Current market value estimates
+       - Projected growth rates (CAGR)
+       - Key growth drivers
+    
+    2. Technology & Innovation:
+       - Emerging technologies in this space
+       - New business models
+       - Innovation adoption rates
+    
+    3. Consumer Behavior:
+       - Changing customer preferences
+       - Usage patterns and engagement metrics
+       - Pain points and unmet needs
+    
+    4. Regulatory Environment:
+       - Current regulations affecting the market
+       - Proposed regulatory changes
+       - Compliance requirements
+    
+    SOURCES: Industry reports, news analysis, academic papers, government data
   expected_output: >
-    Market trends report with:
-    - Market sizing data from multiple sources
-    - Emerging trend analysis 
-    - Regulatory and market dynamics
-    - Consumer behavior and patterns
-    - Investment and funding patterns
+    MARKET TRENDS ANALYSIS:
+    - Market Size: $X billion (2024), projected $Y billion by 2027 (Z% CAGR)
+    - Key Growth Drivers: [driver1, driver2, driver3]
+    - Emerging Technologies: [tech1, tech2] with adoption timelines
+    - Consumer Shifts: [specific behavior changes with evidence]
+    - Regulatory Landscape: [current and upcoming regulations]
+    - Data Sources: [list of sources with dates]
   agent: digitalIntelligenceGatherer
 
-# Data Analyst Task
+# Data Analyst Tasks
 swot_analysis_task:
   description: >
-    Perform comprehensive SWOT analysis using the collected market data.
-    Identify:
-    - Strengths: Competitive advantages, unique capabilities
-    - Weaknesses: Gaps, vulnerabilities, cost disadvantages, potential threats, limitations
-    - Opportunities: Market gaps, emerging trends, unmet needs
-    - Threats: Competitive moves, market shifts, regulatory risks
+    ANALYZE the collected market data to create a comprehensive SWOT:
+    
+    PROCESS:
+    1. Strengths: Identify competitive advantages from:
+       - Unique features or capabilities
+       - Strong market positioning
+       - Proprietary technology or IP
+       - Brand reputation and loyalty
+    
+    2. Weaknesses: Find gaps and vulnerabilities:
+       - Feature gaps compared to competitors
+       - Poor customer satisfaction indicators
+       - Limited market presence or scale
+       - Operational inefficiencies
+    
+    3. Opportunities: Identify market openings:
+       - Underserved customer segments
+       - Emerging technology applications
+       - Regulatory or market changes creating openings
+       - Partnership or expansion possibilities
+    
+    4. Threats: Assess external risks:
+       - New competitors or disruptive technologies
+       - Changing customer preferences
+       - Economic or regulatory headwinds
+       - Supply chain or resource constraints
+    
+    REQUIREMENT: Every SWOT item MUST have supporting evidence from collected data.
   expected_output: >
-    Detailed SWOT analysis with:
-    - 5-7 items per category with evidence
-    - Impact assessment for each items
-    - Data sources and confidence levels
+    QUANTIFIED SWOT ANALYSIS:
+    
+    STRENGTHS (with evidence):
+    1. [Strength]: [Specific evidence from data, e.g., "80% positive reviews on feature X"]
+    2. [Strength]: [Evidence with metrics]
+    
+    WEAKNESSES (with evidence):
+    1. [Weakness]: [Specific data, e.g., "Missing key feature that 3/5 competitors offer"]
+    2. [Weakness]: [Evidence with impact assessment]
+    
+    OPPORTUNITIES (with potential impact):
+    1. [Opportunity]: [Market gap with size estimate]
+    2. [Opportunity]: [Trend with adoption projection]
+    
+    THREATS (with risk level):
+    1. [Threat]: [Specific risk with probability assessment]
+    2. [Threat]: [Competitive move with timeline]
+    
+    CONFIDENCE LEVELS: [High/Medium/Low] for each analysis
   agent: quantitativeInsightsSpecialist
+  context: [competitor_data_collection_task, market_trends_collection_task]
 
 competitive_benchmarking_task:
   description: >
-    Create competitive benchmarching matrix comparing key players on:
-    1. Product features and capabilities
-    2. Pricing and value proposition
-    3. Market presence and brand strength 
-    4. Innovation and technology adoption
-    5. Customer satisfaction and retention
+    CREATE detailed competitive benchmarking for "{research_topic}":
+    
+    COMPARISON DIMENSIONS:
+    1. Product Features (Weight: 40%):
+       - Core functionality comparison
+       - Unique features assessment
+       - Technology stack evaluation
+    
+    2. Pricing & Value (Weight: 25%):
+       - Price point comparison
+       - Value for money assessment
+       - Packaging and bundling analysis
+    
+    3. Market Position (Weight: 20%):
+       - Brand recognition and reputation
+       - Market share estimates
+       - Geographic coverage
+    
+    4. Customer Focus (Weight: 15%):
+       - Customer satisfaction indicators
+       - Support and service quality
+       - Community engagement
+    
+    SCORING: Use 1-10 scale for each dimension, apply weights, calculate total scores.
   expected_output: >
-    Competitive benchmarking report with:
-    - Weighted scoring matrix 
-    - Feature-by-feature comparison
-    - Market positioning map
-    - Competitive advantage analysis 
-    - Data sources and confidence levels
+    COMPETITIVE BENCHMARKING MATRIX:
+    
+    SCORED COMPARISON:
+    | Competitor | Product (40%) | Pricing (25%) | Market (20%) | Customer (15%) | TOTAL |
+    |------------|---------------|---------------|--------------|----------------|-------|
+    | Company A  | 8/10          | 7/10          | 9/10         | 8/10           | 8.0   |
+    | Company B  | 6/10          | 9/10          | 7/10         | 7/10           | 7.1   |
+    
+    KEY FINDINGS:
+    - Market Leader: [Company] with strengths in [areas]
+    - Value Leader: [Company] with best price-to-feature ratio
+    - Innovation Leader: [Company] with most advanced features
+    
+    COMPETITIVE POSITIONING MAP:
+    [Description of where each company positions in the market]
   agent: quantitativeInsightsSpecialist
+  context: [competitor_data_collection_task]
 
-
-# Reporting Speialist Tasks 
+# Reporting Specialist Tasks
 executive_summary_task:
   description: >
-    Create an executive summary for C-level stakeholders based on all research findings.
-    Focus on:
-    1. Key insights and implications
-    2. Strategic recommendations
-    3. Potential risks and mitigation strategies
-    4. Future prospects and growth projections
-    5. Required actions and investments
+    SYNTHESIZE all research findings into a 1-page executive summary:
+    
+    STRUCTURE:
+    1. Situation Overview: Current market state and key dynamics
+    2. Key Findings: 3-5 most important insights with data support
+    3. Strategic Implications: What these findings mean for the business
+    4. Recommended Actions: Specific, prioritized recommendations
+    5. Risk Assessment: Key risks and mitigation strategies
+    6. Investment Requirements: Resources needed for implementation
+    
+    TONE: Professional, concise, data-driven, actionable
+    AUDIENCE: C-level executives and decision-makers
   expected_output: >
-    1-page executive summary with:
-    - Key findings (3-5 bullet points)
-    - Strategic recommendations (prioritized)
-    - Risk assessment matrix
-    - Implementation roadmap
+    EXECUTIVE SUMMARY - {research_topic}
+    
+    MARKET OVERVIEW:
+    [2-3 sentence summary of current market state and key dynamics]
+    
+    KEY INSIGHTS:
+    • [Insight 1: Quantified finding with strategic implication]
+    • [Insight 2: Competitive gap with opportunity size]
+    • [Insight 3: Emerging trend with timing impact]
+    
+    STRATEGIC RECOMMENDATIONS (Prioritized):
+    1. IMMEDIATE (0-3 months): [Specific action, owner, timeline, expected outcome]
+    2. SHORT-TERM (3-6 months): [Specific initiative, resources needed, ROI estimate]
+    3. STRATEGIC (6-12 months): [Long-term move, investment required, market impact]
+    
+    CRITICAL RISKS:
+    • [Risk 1: Description, probability, impact, mitigation]
+    • [Risk 2: Description, probability, impact, mitigation]
+    
+    SUCCESS METRICS: [KPIs to measure implementation success]
   agent: strategicCommunicationsExpert
+  context: [swot_analysis_task, competitive_benchmarking_task]
 
 comprehensive_report_task:
   description: >
-    Create a comprehensive research report including:
-    1. Market overview and competitive landscape
-    2. Detailed SWOT analysis
-    3. Competitive benchmarking 
-    4. Strategic recommendations
-    5. Implementation guidance
+    CREATE a comprehensive 5-10 page research report including:
+    
+    REPORT STRUCTURE:
+    1. Executive Summary (from executive_summary_task)
+    2. Methodology and Data Sources
+    3. Market Overview and Competitive Landscape
+    4. Detailed SWOT Analysis
+    5. Competitive Benchmarking Results
+    6. Strategic Recommendations and Implementation Plan
+    7. Appendices with Raw Data and Detailed Analysis
+    
+    REQUIREMENTS:
+    - Include data visualizations where appropriate
+    - Reference all data sources
+    - Maintain professional business formatting
+    - Ensure all claims are evidence-backed
   expected_output: >
-    5-10 page comprehensive report with:
-    - Executive summary
-    - Detailed analysis sections
-    - Data visualizations 
-    - Actionable recommendations
-    - Appendices with raw data 
+    COMPREHENSIVE RESEARCH REPORT: {research_topic}
+    
+    TABLE OF CONTENTS:
+    1. Executive Summary
+    2. Research Methodology
+    3. Market Landscape Analysis
+    4. Competitive Intelligence
+    5. SWOT Analysis
+    6. Strategic Recommendations
+    7. Implementation Roadmap
+    8. Appendices
+    
+    FORMAT: Professional business report with:
+    - Consistent heading hierarchy
+    - Data tables and visualizations
+    - Clear section transitions
+    - Action-oriented recommendations
+    - Source citations throughout
   agent: strategicCommunicationsExpert
-
-
-
-
+  context: [executive_summary_task, quality_assurance_task]
