@@ -1,6 +1,7 @@
 import os
 import sys
 from dotenv import load_dotenv
+from datetime import datetime
 
 def run_research(research_topic: str, research_request: str):
     """Run market research for a given topic"""
@@ -33,7 +34,8 @@ def run_research(research_topic: str, research_request: str):
     # Set the research inputs for tasks
     inputs = {
         'research_topic': research_topic,
-        'research_request': research_request
+        'research_request': research_request,
+        'current_date': datetime.now().strftime('%B %d, %Y')
     }
     
     # Execute the research
