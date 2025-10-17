@@ -1,64 +1,130 @@
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
-from crewai.agents.agent_builder.base_agent import BaseAgent
-from typing import List
-# If you want to run a snippet of code before or after the crew starts,
-# you can use the @before_kickoff and @after_kickoff decorators
-# https://docs.crewai.com/concepts/crews#example-crew-class-with-decorators
+from typing import Any, Dict
+from .tools import create_all_tools
 
 @CrewBase
-class Marketresearch():
-    """Marketresearch crew"""
-
-    agents: List[BaseAgent]
-    tasks: List[Task]
-
-    # Learn more about YAML configuration files here:
-    # Agents: https://docs.crewai.com/concepts/agents#yaml-configuration-recommended
-    # Tasks: https://docs.crewai.com/concepts/tasks#yaml-configuration-recommended
+class MarketResearchCrew():
+    """Market Research Analyst Crew"""
     
-    # If you would like to add tools to your agents, you can learn more about it here:
-    # https://docs.crewai.com/concepts/agents#agent-tools
+    def __init__(self):
+        super().__init__()
+        self.tools = create_all_tools()
+
     @agent
-    def researcher(self) -> Agent:
+    def seniorResearchDirector(self) -> Agent:
         return Agent(
-            config=self.agents_config['researcher'], # type: ignore[index]
+            config=self.agents_config['seniorResearchDirector'],
             verbose=True
         )
 
     @agent
-    def reporting_analyst(self) -> Agent:
+    def digitalIntelligenceGatherer(self) -> Agent:
         return Agent(
-            config=self.agents_config['reporting_analyst'], # type: ignore[index]
+            config=self.agents_config['digitalIntelligenceGatherer'],
+            tools=self.tools,  # All tools for data collection
             verbose=True
         )
 
-    # To learn more about structured task outputs,
-    # task dependencies, and task callbacks, check out the documentation:
-    # https://docs.crewai.com/concepts/tasks#overview-of-a-task
-    @task
-    def research_task(self) -> Task:
-        return Task(
-            config=self.tasks_config['research_task'], # type: ignore[index]
+    @agent
+    def quantitativeInsightsSpecialist(self) -> Agent:
+        return Agent(
+            config=self.agents_config['quantitativeInsightsSpecialist'],
+            verbose=True
+        )
+
+    @agent
+    def strategicCommunicationsExpert(self) -> Agent:
+        return Agent(
+            config=self.agents_config['strategicCommunicationsExpert'],
+            verbose=True
         )
 
     @task
-    def reporting_task(self) -> Task:
+    def research_planning_task(self) -> Task:
         return Task(
-            config=self.tasks_config['reporting_task'], # type: ignore[index]
-            output_file='report.md'
+            config=self.tasks_config['research_planning_task'],
+            agent=self.seniorResearchDirector()
+        )
+
+    @task
+    def competitor_data_collection_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['competitor_data_collection_task'],
+            agent=self.digitalIntelligenceGatherer(),
+            context=[self.research_planning_task()]
+        )
+
+    @task
+    def market_trends_collection_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['market_trends_collection_task'],
+            agent=self.digitalIntelligenceGatherer(),
+            context=[self.research_planning_task()]
+        )
+
+    @task
+    def swot_analysis_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['swot_analysis_task'],
+            agent=self.quantitativeInsightsSpecialist(),
+            context=[
+                self.competitor_data_collection_task(),
+                self.market_trends_collection_task()
+            ]
+        )
+
+    @task
+    def competitive_benchmarking_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['competitive_benchmarking_task'],
+            agent=self.quantitativeInsightsSpecialist(),
+            context=[self.competitor_data_collection_task()]
+        )
+
+    @task
+    def quality_assurance_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['quality_assurance_task'],
+            agent=self.seniorResearchDirector(),
+            context=[
+                self.competitor_data_collection_task(),
+                self.market_trends_collection_task(),
+                self.swot_analysis_task(),
+                self.competitive_benchmarking_task()
+            ]
+        )
+
+    @task
+    def executive_summary_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['executive_summary_task'],
+            agent=self.strategicCommunicationsExpert(),
+            context=[
+                self.swot_analysis_task(),
+                self.competitive_benchmarking_task()
+            ]
+        )
+
+    @task
+    def comprehensive_report_task(self) -> Task:
+        return Task(
+            config=self.tasks_config['comprehensive_report_task'],
+            agent=self.strategicCommunicationsExpert(),
+            output_file='research_report.md',
+            context=[
+                self.executive_summary_task(),
+                self.quality_assurance_task()
+            ]
         )
 
     @crew
     def crew(self) -> Crew:
-        """Creates the Marketresearch crew"""
-        # To learn how to add knowledge sources to your crew, check out the documentation:
-        # https://docs.crewai.com/concepts/knowledge#what-is-knowledge
-
+        """Creates the Market Research Crew"""
         return Crew(
-            agents=self.agents, # Automatically created by the @agent decorator
-            tasks=self.tasks, # Automatically created by the @task decorator
+            agents=self.agents,  # Automatically populated by @agent decorators
+            tasks=self.tasks,    # Automatically populated by @task decorators
             process=Process.sequential,
             verbose=True,
-            # process=Process.hierarchical, # In case you wanna use that instead https://docs.crewai.com/how-to/Hierarchical/
+            memory=False
         )

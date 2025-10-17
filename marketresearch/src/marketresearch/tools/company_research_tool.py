@@ -1,5 +1,4 @@
 from .base_tool import BaseMarketTool
-import asyncio
 
 class CompanyResearchTool(BaseMarketTool):
     name: str = "Company Research"
@@ -7,11 +6,6 @@ class CompanyResearchTool(BaseMarketTool):
     
     def _run(self, company_name: str) -> str:
         """Comprehensive company research"""
-        import asyncio
-        return asyncio.run(self._async_company_research(company_name))
-    
-    async def _async_company_research(self, company_name: str) -> str:
-        """Perform comprehensive company research"""
         # Import here to avoid circular imports
         from .web_search_tool import WebSearchTool
         from .news_search_tool import NewsSearchTool
@@ -20,26 +14,26 @@ class CompanyResearchTool(BaseMarketTool):
         news_tool = NewsSearchTool()
         
         # Get company overview
-        overview = await web_tool._async_search(
+        overview = web_tool._run(
             f"{company_name} company overview business model products", 
             3
         )
         
         # Get recent news
-        news = await news_tool._async_news_search(company_name, 3)
+        news = news_tool._run(company_name, 3)
         
         # Get financial data if available
-        financial_info = await self._get_financial_info(company_name)
+        financial_info = self._get_financial_info(company_name)
         
         return self._format_company_report(company_name, overview, news, financial_info)
     
-    async def _get_financial_info(self, company_name: str) -> str:
+    def _get_financial_info(self, company_name: str) -> str:
         """Get basic financial information"""
         from .stock_data_tool import StockDataTool
         
         stock_tool = StockDataTool()
         # Try to get stock data - this will handle errors gracefully
-        financial_data = await stock_tool._async_get_stock_data(company_name)
+        financial_data = stock_tool._run(company_name)
         
         if "Error:" not in financial_data:
             return financial_data

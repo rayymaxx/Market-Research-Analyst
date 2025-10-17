@@ -1,68 +1,67 @@
-#!/usr/bin/env python
+import os
 import sys
-import warnings
+from dotenv import load_dotenv
 
-from datetime import datetime
-
-from marketresearch.crew import Marketresearch
-
-warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
-
-# This main file is intended to be a way for you to run your
-# crew locally, so refrain from adding unnecessary logic into this file.
-# Replace with inputs you want to test with, it will automatically
-# interpolate any tasks and agents information
-
-def run():
-    """
-    Run the crew.
-    """
+def run_research(research_topic: str, research_request: str):
+    """Run market research for a given topic"""
+    
+    # Load environment variables
+    load_dotenv()
+    
+    # Debug: Check current directory and config path
+    print(f"Current working directory: {os.getcwd()}")
+    print(f"Config path from pyproject.toml: src/marketresearch/config")
+    
+    # Check if config files exist
+    config_path = "src/marketresearch/config"
+    agents_file = os.path.join(config_path, "agents.yaml")
+    tasks_file = os.path.join(config_path, "tasks.yaml")
+    
+    print(f"Agents file exists: {os.path.exists(agents_file)}")
+    print(f"Tasks file exists: {os.path.exists(tasks_file)}")
+    
+    if os.path.exists(agents_file):
+        print(f"Agents file path: {os.path.abspath(agents_file)}")
+    if os.path.exists(tasks_file):
+        print(f"Tasks file path: {os.path.abspath(tasks_file)}")
+    
+    from .crew import MarketResearchCrew
+    
+    # Initialize the crew
+    research_crew = MarketResearchCrew()
+    
+    # Set the research inputs for tasks
     inputs = {
-        'topic': 'AI LLMs',
-        'current_year': str(datetime.now().year)
+        'research_topic': research_topic,
+        'research_request': research_request
     }
     
-    try:
-        Marketresearch().crew().kickoff(inputs=inputs)
-    except Exception as e:
-        raise Exception(f"An error occurred while running the crew: {e}")
-
-
-def train():
-    """
-    Train the crew for a given number of iterations.
-    """
-    inputs = {
-        "topic": "AI LLMs",
-        'current_year': str(datetime.now().year)
-    }
-    try:
-        Marketresearch().crew().train(n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs)
-
-    except Exception as e:
-        raise Exception(f"An error occurred while training the crew: {e}")
-
-def replay():
-    """
-    Replay the crew execution from a specific task.
-    """
-    try:
-        Marketresearch().crew().replay(task_id=sys.argv[1])
-
-    except Exception as e:
-        raise Exception(f"An error occurred while replaying the crew: {e}")
-
-def test():
-    """
-    Test the crew execution and returns the results.
-    """
-    inputs = {
-        "topic": "AI LLMs",
-        "current_year": str(datetime.now().year)
-    }
+    # Execute the research
+    print(f"🚀 Starting market research: {research_topic}")
+    print("=" * 60)
     
     try:
-        Marketresearch().crew().test(n_iterations=int(sys.argv[1]), eval_llm=sys.argv[2], inputs=inputs)
-
+        result = research_crew.crew().kickoff(inputs=inputs)
+        
+        print("\n" + "=" * 60)
+        print("✅ RESEARCH COMPLETED SUCCESSFULLY!")
+        print("=" * 60)
+        print(f"Final Result: {result}")
+        
+        return result
+        
     except Exception as e:
-        raise Exception(f"An error occurred while testing the crew: {e}")
+        print(f"❌ Research failed: {str(e)}")
+        raise
+
+if __name__ == "__main__":
+    # Example usage
+    if len(sys.argv) > 1:
+        research_topic = sys.argv[1]
+        research_request = sys.argv[2] if len(sys.argv) > 2 else f"Analyze the {research_topic} market"
+    else:
+        # Default research topic
+        research_topic = "electric vehicle charging infrastructure"
+        research_request = "Analyze the competitive landscape, market trends, and growth opportunities in the electric vehicle charging infrastructure market"
+    
+    run_research(research_topic, research_request)

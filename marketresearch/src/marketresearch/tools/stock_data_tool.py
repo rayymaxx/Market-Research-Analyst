@@ -5,11 +5,6 @@ class StockDataTool(BaseMarketTool):
     description: str = "Get stock price, market data, and financial information for public companies"
     
     def _run(self, symbol: str) -> str:
-        """Synchronous wrapper for async stock data"""
-        import asyncio
-        return asyncio.run(self._async_get_stock_data(symbol))
-    
-    async def _async_get_stock_data(self, symbol: str) -> str:
         """Get stock data from Alpha Vantage"""
         api_key = self._get_api_key("ALPHA_VANTAGE_API_KEY")
         if not api_key:
@@ -19,15 +14,15 @@ class StockDataTool(BaseMarketTool):
         symbol = symbol.upper().strip()
         
         # Try global quote first
-        quote_result = await self._get_global_quote(symbol, api_key)
+        quote_result = self._get_global_quote(symbol, api_key)
         if "Error:" not in quote_result:
             return quote_result
         
         # If quote fails, try overview
-        overview_result = await self._get_company_overview(symbol, api_key)
+        overview_result = self._get_company_overview(symbol, api_key)
         return overview_result
     
-    async def _get_global_quote(self, symbol: str, api_key: str) -> str:
+    def _get_global_quote(self, symbol: str, api_key: str) -> str:
         """Get current stock quote"""
         params = {
             "function": "GLOBAL_QUOTE",
@@ -35,7 +30,7 @@ class StockDataTool(BaseMarketTool):
             "apikey": api_key
         }
         
-        result = await self._make_api_request(
+        result = self._make_api_request(
             "https://www.alphavantage.co/query",
             params=params
         )
@@ -49,7 +44,7 @@ class StockDataTool(BaseMarketTool):
         
         return self._format_error(f"No stock data found for {symbol}")
     
-    async def _get_company_overview(self, symbol: str, api_key: str) -> str:
+    def _get_company_overview(self, symbol: str, api_key: str) -> str:
         """Get company overview as fallback"""
         params = {
             "function": "OVERVIEW",
@@ -57,7 +52,7 @@ class StockDataTool(BaseMarketTool):
             "apikey": api_key
         }
         
-        result = await self._make_api_request(
+        result = self._make_api_request(
             "https://www.alphavantage.co/query",
             params=params
         )

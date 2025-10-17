@@ -1,17 +1,18 @@
+from crewai.tools import BaseTool
 import aiohttp
 import os
-from typing import Dict, Any 
-from crewai.tools import BaseTool 
+from typing import Dict, Any
 
 class BaseMarketTool(BaseTool):
     """Base class for all market research tools with common utilities"""
-
-    def __init__(self):
-        super().__init__()
-        self.session = None
-
-    async def _make_api_request(self, url: str, method: str = "GET", **kwargs) -> Dict[str, Any]:
+    
+    def _make_api_request(self, url: str, method: str = "GET", **kwargs) -> Dict[str, Any]:
         """Make HTTP request with error handling"""
+        import asyncio
+        return asyncio.run(self._async_make_api_request(url, method, **kwargs))
+    
+    async def _async_make_api_request(self, url: str, method: str = "GET", **kwargs) -> Dict[str, Any]:
+        """Async implementation of API request"""
         try:
             async with aiohttp.ClientSession() as session:
                 async with session.request(method, url, **kwargs) as response:
@@ -19,12 +20,11 @@ class BaseMarketTool(BaseTool):
                         return await response.json()
                     else:
                         return {"error": f"API returned status {response.status}"}
-                    
         except Exception as e:
-            return {"error": f"Request failed: { str(e)}"}
-        
+            return {"error": f"Request failed: {str(e)}"}
+    
     def _get_api_key(self, key_name: str) -> str:
-        """Retrieve API key from environment variables"""
+        """Get API key from environment variables"""
         return os.getenv(key_name, "")
     
     def _format_error(self, message: str) -> str:
