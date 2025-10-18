@@ -48,6 +48,61 @@ class AnalysisPrompts(BasePromptManager, ChainOfThoughtMixin, RoleBasedMixin):
             "market_trends": self._get_trends_examples(),
         }
     
+    def _get_trends_examples(self) -> List[FewShotExample]:
+        return [
+            FewShotExample(
+                input={
+                    "research_topic": "Artificial Intelligence in Healthcare",
+                    "market_data": {
+                        "market_size": "$15B (2023)",
+                        "growth_rate": "37% CAGR",
+                        "key_developments": ["AI diagnostics", "Drug discovery", "Patient monitoring"]
+                    }
+                },
+                output={
+                    "technology_trends": [
+                        {
+                            "trend": "AI-powered diagnostic tools becoming more accurate than human doctors",
+                            "impact": "HIGH",
+                            "confidence": 0.85,
+                            "timing": "NEAR-TERM (1-3 years)"
+                        }
+                    ],
+                    "consumer_trends": [
+                        {
+                            "trend": "Patients increasingly comfortable with AI-assisted healthcare",
+                            "impact": "MEDIUM", 
+                            "confidence": 0.75,
+                            "timing": "IMMINENT (0-12 months)"
+                        }
+                    ],
+                    "regulatory_trends": [
+                        {
+                            "trend": "FDA streamlining approval process for AI medical devices",
+                            "impact": "HIGH",
+                            "confidence": 0.80,
+                            "timing": "NEAR-TERM (1-3 years)"
+                        }
+                    ],
+                    "economic_trends": [
+                        {
+                            "trend": "Venture capital investment in healthtech AI tripling annually",
+                            "impact": "MEDIUM",
+                            "confidence": 0.90,
+                            "timing": "IMMINENT (0-12 months)"
+                        }
+                    ],
+                    "key_insights": [
+                        "AI diagnostics market expected to reach $4.5B by 2025",
+                        "Regulatory approval timelines decreasing from 24 to 12 months",
+                        "Patient acceptance rates increasing from 45% to 75% in 2 years"
+                    ]
+                },
+                explanation="Analyzed market size and growth data to identify major technology trends. Tracked regulatory developments and patient adoption patterns. Combined quantitative market data with qualitative trend analysis to forecast timing and impact."
+            )
+        ]
+
+    
     def _get_swot_examples(self) -> List[FewShotExample]:
         return [
             FewShotExample(

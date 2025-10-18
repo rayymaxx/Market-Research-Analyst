@@ -6,6 +6,11 @@ uvicorn
 fastapi
 requests
 dotenv
+google-generativeai
+groq 
+pydantic 
+python-dotenv
+chromadb 
 
 
 

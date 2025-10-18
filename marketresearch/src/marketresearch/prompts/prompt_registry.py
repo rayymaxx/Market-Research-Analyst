@@ -1,5 +1,5 @@
 """
-Enhanced prompt registry with validation and type safety
+Enhanced prompt registry with deferred validation
 """
 from .analysis_prompts import AnalysisPrompts
 from .research_prompts import ResearchPrompts
@@ -18,7 +18,7 @@ class PromptValidation(BaseModel):
     optional_variables: List[str] = []
 
 class PromptRegistry:
-    """Enhanced registry with validation and type safety"""
+    """Enhanced registry with deferred validation"""
     
     def __init__(self):
         self.managers = {
@@ -44,6 +44,12 @@ class PromptRegistry:
                     prompt_name="competitive_benchmarking",
                     required_variables=["research_topic", "current_date", "competitors", "format_instructions"],
                     optional_variables=["context_data"]
+                ),
+                "market_trends": PromptValidation(
+                    category="analysis",
+                    prompt_name="market_trends",
+                    required_variables=["research_topic", "current_date", "format_instructions"],
+                    optional_variables=["market_data"]
                 )
             },
             "research": {
@@ -52,23 +58,60 @@ class PromptRegistry:
                     prompt_name="data_collection", 
                     required_variables=["research_topic", "current_date", "format_instructions"],
                     optional_variables=["primary_sources", "secondary_sources", "tertiary_sources"]
+                ),
+                "company_research": PromptValidation(
+                    category="research",
+                    prompt_name="company_research",
+                    required_variables=["research_topic", "current_date", "company_name", "format_instructions"],
+                    optional_variables=["data_sources", "industry_context"]
+                ),
+                "industry_analysis": PromptValidation(
+                    category="research",
+                    prompt_name="industry_analysis",
+                    required_variables=["research_topic", "current_date", "industry_name", "format_instructions"],
+                    optional_variables=["industry_data"]
+                )
+            },
+            "reporting": {
+                "executive_summary": PromptValidation(
+                    category="reporting",
+                    prompt_name="executive_summary",
+                    required_variables=["research_topic", "current_date", "analysis_results", "format_instructions"],
+                    optional_variables=["target_audience"]
+                ),
+                "research_report": PromptValidation(
+                    category="reporting",
+                    prompt_name="research_report",
+                    required_variables=["research_topic", "current_date", "analysis_data", "format_instructions"],
+                    optional_variables=["target_audience"]
+                ),
+                "strategic_recommendations": PromptValidation(
+                    category="reporting",
+                    prompt_name="strategic_recommendations",
+                    required_variables=["research_topic", "current_date", "business_context", "analysis_insights", "format_instructions"],
+                    optional_variables=["timeframe"]
                 )
             }
         }
     
     def get_prompt(self, category: str, prompt_name: str, variables: Dict[str, Any] = None) -> str:
-        """Get a prompt with validation"""
-        # Validate inputs
-        self._validate_request(category, prompt_name, variables or {})
+        """Get a prompt with deferred validation"""
+        # Only validate if variables are provided (at execution time)
+        if variables:
+            self._validate_request(category, prompt_name, variables)
         
         manager = self.managers.get(category)
         if not manager:
             raise ValueError(f"Prompt category '{category}' not found. Available: {list(self.managers.keys())}")
         
+        # If no variables provided (at chain creation), return prompt without formatting
+        if not variables:
+            return manager.prompts.get(prompt_name, "")
+        
         return manager.get_prompt(prompt_name, variables)
     
     def _validate_request(self, category: str, prompt_name: str, variables: Dict[str, Any]):
-        """Validate prompt request against rules"""
+        """Validate prompt request against rules - only called at execution time"""
         category_rules = self.validation_rules.get(category, {})
         validation_rule = category_rules.get(prompt_name)
         

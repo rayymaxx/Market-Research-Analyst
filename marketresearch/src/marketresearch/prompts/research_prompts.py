@@ -45,6 +45,52 @@ class ResearchPrompts(BasePromptManager, ChainOfThoughtMixin, RoleBasedMixin):
             "data_collection": self._get_data_collection_examples(),
             "company_research": self._get_company_research_examples(),
         }
+    
+    def _get_company_research_examples(self) -> List[FewShotExample]:
+        return [
+            FewShotExample(
+                input={
+                    "research_topic": "Cloud Computing Providers",
+                    "company_name": "Amazon Web Services",
+                    "data_sources": {
+                        "financial": "Annual reports, investor presentations",
+                        "product": "AWS documentation, feature lists",
+                        "competitive": "Gartner Magic Quadrant, industry reports"
+                    }
+                },
+                output={
+                    "company_name": "Amazon Web Services",
+                    "overview": "Leading cloud computing platform offering over 200 services globally, part of Amazon.com Inc.",
+                    "products_services": [
+                        "EC2 (Elastic Compute Cloud)",
+                        "S3 (Simple Storage Service)", 
+                        "Lambda (Serverless Computing)",
+                        "RDS (Relational Database Service)",
+                        "AWS AI/ML Services"
+                    ],
+                    "market_position": "Market leader with 33% market share in cloud infrastructure",
+                    "financial_health": "Strong with $80B+ annual revenue, 30% YoY growth",
+                    "key_metrics": [
+                        {"category": "Market Share", "value": "33% global cloud infrastructure"},
+                        {"category": "Revenue", "value": "$80B+ annually"},
+                        {"category": "Data Centers", "value": "84 availability zones globally"},
+                        {"category": "Customer Base", "value": "Millions including NASA, Netflix"}
+                    ],
+                    "strengths": [
+                        "Largest global infrastructure footprint",
+                        "Broadest service portfolio",
+                        "Strong enterprise relationships", 
+                        "Continuous innovation pipeline"
+                    ],
+                    "challenges": [
+                        "Increasing regulatory scrutiny",
+                        "Growing competition from Microsoft Azure and Google Cloud",
+                        "Price pressure in core services"
+                    ]
+                },
+                explanation="Researched AWS through multiple sources: analyzed financial reports for revenue data, technical documentation for service portfolio, industry reports for market positioning. Cross-referenced Gartner analysis with actual customer case studies."
+            )
+        ]
 
     def _get_data_collection_examples(self) -> List[FewShotExample]:
         return [
