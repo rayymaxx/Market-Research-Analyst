@@ -1,12 +1,15 @@
 # src/marketresearch/rag_chain_factory.py
-from .chains import ChainFactory
 from .rag.pipeline import RAGPipeline
+from langchain.memory import ConversationBufferMemory
 
-class RAGEnhancedChainFactory(ChainFactory):
-    """ChainFactory enhanced with smart RAG capabilities"""
+class RAGEnhancedChainFactory:
+    """Simplified RAG factory without complex chains"""
     
     def __init__(self, knowledge_base_path: str = "./knowledge"):
-        super().__init__()
+        self.memory = ConversationBufferMemory(
+            return_messages=True,
+            memory_key="research_history"
+        )
         self.rag_pipeline = RAGPipeline(knowledge_base_path)
         
         # Print knowledge base stats
@@ -18,24 +21,11 @@ class RAGEnhancedChainFactory(ChainFactory):
         print(f"   📊 Market Data: {stats['market_data']}")
         print(f"   👤 User Preferences: {stats['user_preferences']}")
     
-    def execute_chain(self, chain_type: str, **kwargs):
-        """Execute a chain with smart RAG context"""
-        # Get relevant context based on chain type and inputs
-        rag_context = self.rag_pipeline.smart_context_retrieval(chain_type, **kwargs)
-        
-        if rag_context:
-            # Add RAG context to inputs
-            kwargs['rag_context'] = rag_context
-            
-            # Augment the input prompt
-            original_input = kwargs.get('input', '')
-            if original_input:
-                augmented_input = f"""Based on the following knowledge base context:
-
-{rag_context}
-
-{original_input}"""
-                kwargs['input'] = augmented_input
-        
-        # Execute the chain
-        return super().execute_chain(chain_type, **kwargs)
+    def get_research_summary(self):
+        """Get summary of research progress"""
+        memory_vars = self.memory.load_memory_variables({})
+        return f"Research sessions: {len(memory_vars.get('research_history', []))}"
+    
+    def smart_context_retrieval(self, query_type: str, **kwargs):
+        """Get relevant context from RAG pipeline"""
+        return self.rag_pipeline.smart_context_retrieval(query_type, **kwargs)

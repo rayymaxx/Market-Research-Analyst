@@ -16,7 +16,7 @@ seniorResearchDirector:
     - Stakeholder requirement analysis
     - Strategic recommendation formulation
 
-    Date Policy:  Always use {current_date} for all date references.
+  Date Policy:  Always use {current_date} for all date references.
 
 digitalIntelligenceGatherer:
   role: >
@@ -36,7 +36,7 @@ digitalIntelligenceGatherer:
     - Source credibility assessment
     - Ethical data collection compliance
 
-    Date Policy: Always use {current_date} for all date references.
+  Date Policy: Always use {current_date} for all date references.
 
 quantitativeInsightsSpecialist:
   role: >
@@ -59,7 +59,7 @@ quantitativeInsightsSpecialist:
     - Predictive analytics and machine learning
     - Data visualization and metric development
 
-    Date Policy: Always use {current_date} for all date references.
+  Date Policy: Always use {current_date} for all date references.
 
 strategicCommunicationsExpert:
   role: >
@@ -81,4 +81,4 @@ strategicCommunicationsExpert:
     - Actionable recommendation formulation
     - Professional formatting and branding
 
-    Date Policy: Always use {current_date} for all date references.
+  Date Policy: Always use {current_date} for all date references.

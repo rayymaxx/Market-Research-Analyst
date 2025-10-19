@@ -1,6 +1,10 @@
 # src/marketresearch/rag/chroma_store.py
 import os
 import chromadb
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 from typing import List, Dict, Any, Optional
 from .huggingface_embeddings import HuggingFaceEmbeddings
 
@@ -10,7 +14,13 @@ class ChromaVectorStore:
     def __init__(self, knowledge_base_path: str = "./knowledge", collection_name: str = "market_research"):
         self.knowledge_base_path = knowledge_base_path
         self.embeddings = HuggingFaceEmbeddings()
-        self.client = chromadb.PersistentClient(path="./chroma_db")
+        # Use environment variable or default to marketresearch/chroma_db
+        chroma_path = os.getenv('CHROMA_DB_PATH', './chroma_db')
+        if not os.path.isabs(chroma_path):
+            project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+            chroma_path = os.path.join(project_root, chroma_path.lstrip('./'))
+        os.makedirs(chroma_path, exist_ok=True)
+        self.client = chromadb.PersistentClient(path=chroma_path)
         self.collection = self.client.get_or_create_collection(
             name=collection_name,
             metadata={"description": "Market Research Knowledge Base"}

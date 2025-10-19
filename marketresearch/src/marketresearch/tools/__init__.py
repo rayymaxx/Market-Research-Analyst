@@ -1,8 +1,13 @@
+# src/marketresearch/tools/__init__.py
 from .web_search_tool import WebSearchTool
 from .news_search_tool import NewsSearchTool
-from .company_research_tool import CompanyResearchTool
-from .stock_data_tool import StockDataTool
-from .market_data_tool import MarketDataTool
+
+from .chain_tools import (
+    SWOTAnalysisTool, 
+    CompanyResearchChainTool, 
+    MarketTrendsTool,
+    CompetitiveBenchmarkingTool
+)
 
 # Factory function to create all tools
 def create_all_tools():
@@ -10,16 +15,16 @@ def create_all_tools():
     return [
         WebSearchTool(),
         NewsSearchTool(),
-        CompanyResearchTool(),
-        StockDataTool(),
-        MarketDataTool()
+
     ]
 
 __all__ = [
     "WebSearchTool",
     "NewsSearchTool", 
-    "CompanyResearchTool",
-    "StockDataTool",
-    "MarketDataTool",
+
+    "SWOTAnalysisTool",
+    "CompanyResearchChainTool", 
+    "MarketTrendsTool",
+    "CompetitiveBenchmarkingTool",
     "create_all_tools"
 ]

@@ -9,7 +9,17 @@ class BaseMarketTool(BaseTool):
     def _make_api_request(self, url: str, method: str = "GET", **kwargs) -> Dict[str, Any]:
         """Make HTTP request with error handling"""
         import asyncio
-        return asyncio.run(self._async_make_api_request(url, method, **kwargs))
+        import requests
+        
+        # Use synchronous requests to avoid event loop issues
+        try:
+            response = requests.request(method, url, **kwargs)
+            if response.status_code == 200:
+                return response.json()
+            else:
+                return {"error": f"API returned status {response.status_code}"}
+        except Exception as e:
+            return {"error": f"Request failed: {str(e)}"}
     
     async def _async_make_api_request(self, url: str, method: str = "GET", **kwargs) -> Dict[str, Any]:
         """Async implementation of API request"""
