@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Download, Share, Eye } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
+import { PDFPreviewModal } from '../ui/PDFPreviewModal';
 import { ResearchResponse } from '../../types';
 
 interface ResultsDisplayProps {
@@ -11,19 +12,32 @@ interface ResultsDisplayProps {
 }
 
 export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ research }) => {
+  const [showPDFPreview, setShowPDFPreview] = useState(false);
+  
   if (!research.result) return null;
 
-  const downloadReport = () => {
-    const blob = new Blob([research.result || ''], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `research-report-${research.research_id}.md`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const downloadPDF = async () => {
+    try {
+      const response = await fetch(`/api/research/${research.research_id}/download-pdf`);
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `market-research-${research.research_id}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('PDF download failed:', error);
+    }
   };
+
+  const previewPDF = () => {
+    setShowPDFPreview(true);
+  };
+
+
 
   return (
     <motion.div
@@ -40,17 +54,17 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ research }) => {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={previewPDF}>
               <Eye className="w-4 h-4" />
-              Preview
+              Preview PDF
             </Button>
             <Button variant="outline" size="sm">
               <Share className="w-4 h-4" />
               Share
             </Button>
-            <Button variant="primary" size="sm" onClick={downloadReport}>
+            <Button variant="primary" size="sm" onClick={downloadPDF}>
               <Download className="w-4 h-4" />
-              Download
+              Download PDF
             </Button>
           </div>
         </div>
@@ -106,6 +120,14 @@ export const ResultsDisplay: React.FC<ResultsDisplayProps> = ({ research }) => {
           </ReactMarkdown>
         </div>
       </Card>
+      
+      <PDFPreviewModal
+        isOpen={showPDFPreview}
+        onClose={() => setShowPDFPreview(false)}
+        pdfUrl={`/api/research/${research.research_id}/download-pdf`}
+        researchId={research.research_id}
+        onDownload={downloadPDF}
+      />
     </motion.div>
   );
 };

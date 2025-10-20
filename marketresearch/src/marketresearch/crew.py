@@ -154,7 +154,7 @@ class MarketResearchCrew():
         return Task(
             config=self.tasks_config['final_comprehensive_report_task'],
             agent=self.strategicCommunicationsExpert(),
-            output_file='research_report.md',
+            output_file='research_report.pdf',
             context=[self.comprehensive_data_collection_task(), self.comprehensive_analysis_task()],
             description="""Create the final comprehensive market research report including:
             1. Executive summary with key findings
@@ -181,6 +181,15 @@ class MarketResearchCrew():
     
     def kickoff_with_rag(self, inputs: dict):
         """Enhanced kickoff with memory and context tracking"""
+        from .utils.cache import research_cache
+        
+        # Check cache first
+        cache_key = f"{inputs['research_topic']}_{inputs['research_request']}"
+        cached_result = research_cache.get(cache_key)
+        if cached_result:
+            print(f"📋 Using cached result for: {inputs['research_topic']}")
+            return cached_result
+        
         print("🚀 Starting RAG-Enhanced Market Research...")
         stats = self.chain_factory.rag_pipeline.get_knowledge_stats()
         print(f"📚 Knowledge Base: {stats['total_documents']} documents loaded")
@@ -217,6 +226,17 @@ class MarketResearchCrew():
             # Execute the crew with enhanced context
             result = self.crew().kickoff(inputs=inputs)
             
+            # Convert result to PDF if it's markdown
+            if isinstance(result, str) and result.strip():
+                from .utils.pdf_converter import convert_md_to_pdf
+                research_id = inputs.get('research_id', inputs['research_topic'].replace(' ', '_'))
+                pdf_path = f"research_report_{research_id}.pdf"
+                try:
+                    convert_md_to_pdf(str(result), pdf_path)
+                    print(f"📄 PDF report generated: {pdf_path}")
+                except Exception as pdf_error:
+                    print(f"⚠️ PDF conversion failed: {pdf_error}")
+            
             # Save successful research session to memory
             self.crew_memory.save_context(
                 {"research_topic": inputs['research_topic']},
@@ -226,6 +246,10 @@ class MarketResearchCrew():
             # Update research progress
             self.research_progress['completed_tasks'] = ['all']
             self.research_progress['current_phase'] = 'completed'
+            
+            # Cache the result
+            research_cache.set(cache_key, result)
+            print(f"📋 Research result cached for future use")
             
             print("✅ Research session saved to memory")
             return result

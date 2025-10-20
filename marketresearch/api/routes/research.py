@@ -107,8 +107,32 @@ async def get_research_result(
     return {
         "research_id": research_id,
         "result": research.result,
-        "completed_at": research.completed_at
+        "completed_at": research.completed_at,
+        "pdf_available": ResearchService.check_pdf_exists(research_id)
     }
+
+@router.get("/{research_id}/download-pdf")
+async def download_pdf(
+    research_id: str,
+    user: UserProfile = Depends(get_user)
+):
+    """Download PDF report"""
+    from fastapi.responses import FileResponse
+    import os
+    
+    research = ResearchService.get_research(research_id)
+    if not research:
+        raise HTTPException(status_code=404, detail="Research not found")
+    
+    pdf_path = f"research_report_{research_id}.pdf"
+    if not os.path.exists(pdf_path):
+        raise HTTPException(status_code=404, detail="PDF not found")
+    
+    return FileResponse(
+        path=pdf_path,
+        filename=f"market_research_{research_id}.pdf",
+        media_type="application/pdf"
+    )
 
 @router.get("/history", response_model=ResearchHistory)
 async def get_research_history(

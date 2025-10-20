@@ -108,19 +108,29 @@ class ResearchService:
                 'research_topic': request.research_topic,
                 'research_request': request.research_request,
                 'current_date': datetime.now().strftime('%B %d, %Y'),
-                'user_id': user_id
+                'user_id': user_id,
+                'research_id': research_id
             }
             
-            # Update first task to running
-            cls.update_task_progress(research_id, "comprehensive_data_collection_task", TaskStatus.RUNNING)
+            # Task sequence with real-time updates
+            tasks = [
+                "comprehensive_data_collection_task",
+                "comprehensive_analysis_task", 
+                "final_comprehensive_report_task"
+            ]
             
-            # Execute research
+            # Update first task to running
+            cls.update_task_progress(research_id, tasks[0], TaskStatus.RUNNING)
+            
+            # Execute research with progress tracking
             result = crew.kickoff_with_rag(inputs=inputs)
             
-            # Mark all tasks as completed (simplified for now)
-            cls.update_task_progress(research_id, "comprehensive_data_collection_task", TaskStatus.COMPLETED)
-            cls.update_task_progress(research_id, "comprehensive_analysis_task", TaskStatus.COMPLETED)
-            cls.update_task_progress(research_id, "final_comprehensive_report_task", TaskStatus.COMPLETED)
+            # Simulate task completion progression
+            for i, task_name in enumerate(tasks):
+                cls.update_task_progress(research_id, task_name, TaskStatus.COMPLETED)
+                if i < len(tasks) - 1:
+                    cls.update_task_progress(research_id, tasks[i + 1], TaskStatus.RUNNING)
+                    await asyncio.sleep(0.5)  # Brief delay for UI updates
             
             # Update final status
             cls.update_research_status(
@@ -172,3 +182,10 @@ class ResearchService:
             del cls._research_store[research_id]
             return True
         return False
+    
+    @classmethod
+    def check_pdf_exists(cls, research_id: str) -> bool:
+        """Check if PDF file exists for research"""
+        import os
+        pdf_path = f"research_report_{research_id}.pdf"
+        return os.path.exists(pdf_path)

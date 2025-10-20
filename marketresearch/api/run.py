@@ -15,11 +15,11 @@ if __name__ == "__main__":
     load_dotenv(env_path)
     
     # Run the server
+    port = int(os.environ.get("PORT", 8000))
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=8000,
-        reload=True,
-        reload_dirs=[str(Path(__file__).parent)],
+        port=port,
+        reload=False,
         log_level="info"
     )
