@@ -2,7 +2,7 @@ fastapi==0.104.1
 uvicorn[standard]==0.24.0
 python-multipart==0.0.6
 python-dotenv==1.0.0
-crewai==0.70.1
+crewai>=0.80.0
 langchain==0.2.16
 langchain-core==0.2.38
 langchain-community==0.2.16
