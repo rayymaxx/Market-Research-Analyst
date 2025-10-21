@@ -2,7 +2,7 @@ fastapi
 uvicorn[standard]
 python-multipart
 python-dotenv
-crewai
+crewai[google-genai]
 langchain
 langchain-core
 langchain-community
