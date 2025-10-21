@@ -31,7 +31,10 @@ export const useResearchStore = create<ResearchStore>((set, get) => ({
   startResearch: async (request: ResearchRequest) => {
     set({ isLoading: true, error: null });
     try {
+      console.log('Starting research with:', request);
+      console.log('API URL:', process.env.REACT_APP_API_URL);
       const response = await researchApi.startResearch(request);
+      console.log('Research response:', response);
       set({ currentResearch: response, isLoading: false });
       
       // Start polling if research is pending or running
@@ -39,8 +42,9 @@ export const useResearchStore = create<ResearchStore>((set, get) => ({
         get().pollResearchStatus(response.research_id);
       }
     } catch (error: any) {
+      console.error('Research error:', error);
       set({ 
-        error: error.response?.data?.detail || 'Failed to start research',
+        error: error.response?.data?.detail || error.message || 'Failed to start research',
         isLoading: false 
       });
     }
