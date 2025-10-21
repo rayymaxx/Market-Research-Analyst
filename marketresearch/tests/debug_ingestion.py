@@ -1,4 +1,4 @@
-# tests/debug_ingestion_fixed.py
+# tests/debug_ingestion.py
 import os
 import sys
 from dotenv import load_dotenv
@@ -6,19 +6,18 @@ from dotenv import load_dotenv
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
 load_dotenv()
 
-def debug_ingestion_fixed():
-    print("🔧 DEBUGGING INGESTION ISSUES - FIXED VERSION")
+def debug_ingestion():
+    print("🔧 DEBUGGING GOOGLE EMBEDDINGS INGESTION")
     print("=" * 50)
     
-    # Use the correct path
-    kb_path = "./marketresearch/knowledge"
+    kb_path = "/home/rayymond/Market-Research-Analyst/marketresearch/knowledge"
     
     # 1. Check environment
     print("1. Checking Environment...")
-    api_key = os.getenv("HUGGINGFACE_API_KEY")
-    print(f"   HUGGINGFACE_API_KEY: {'✅ Set' if api_key else '❌ Missing'}")
+    api_key = os.getenv("GEMINI_API_KEY")
+    print(f"   GEMINI_API_KEY: {'✅ Set' if api_key else '❌ Missing'}")
     
-    # 2. Check knowledge base structure with correct path
+    # 2. Check knowledge base structure
     print("\n2. Checking Knowledge Base Structure...")
     print(f"   Knowledge base path: {os.path.abspath(kb_path)}")
     print(f"   Path exists: {os.path.exists(kb_path)}")
@@ -35,50 +34,48 @@ def debug_ingestion_fixed():
                 file_size = os.path.getsize(file_path)
                 print(f'{subindent}{file} ({file_size} bytes)')
     else:
-        print("   ❌ Knowledge base not found at that path!")
-        print("   Available paths:")
-        for root, dirs, files in os.walk("."):
-            if "knowledge" in root:
-                print(f"   - {root}")
+        print("   ❌ Knowledge base not found!")
+        return
     
-    # 3. Test embeddings first (since this was failing)
-    print("\n3. Testing Embeddings...")
-    from marketresearch.rag.huggingface_embeddings import HuggingFaceEmbeddings
+    # 3. Test Google embeddings
+    print("\n3. Testing Google Embeddings...")
+    from marketresearch.rag.google_embeddings import GoogleEmbeddings
     
-    embedder = HuggingFaceEmbeddings()
+    embedder = GoogleEmbeddings()
     test_text = "This is a test document for embedding"
-    print("   Sending test request to HuggingFace...")
+    print("   Sending test request to Google...")
     embedding = embedder.embed_query(test_text)
     
     if embedding and len(embedding) > 0:
-        print(f"   ✅ Embeddings working - vector length: {len(embedding)}")
+        print(f"   ✅ Google embeddings working - vector length: {len(embedding)}")
     else:
-        print("   ❌ Embeddings failed - this will prevent ingestion")
+        print("   ❌ Google embeddings failed - this will prevent ingestion")
         return
     
-    # 4. Test file loading with correct path
-    print("\n4. Testing File Loading...")
+    # 4. Test ChromaDB ingestion
+    print("\n4. Testing ChromaDB Ingestion...")
     from marketresearch.rag.chroma_store import ChromaVectorStore
     
-    print("   Initializing ChromaVectorStore...")
+    print("   Initializing ChromaVectorStore with Google embeddings...")
     try:
         vector_store = ChromaVectorStore(kb_path)
         count = vector_store.get_document_count()
         print(f"   Documents in collection: {count}")
         
         if count == 0:
-            print("   ⚠️  No documents found. Let's check why...")
-            
-            # Manually test file loading
+            print("   ⚠️  No documents found. Checking files...")
             import glob
-            print("\n   Manual file check:")
             company_files = glob.glob(f"{kb_path}/company_profiles/*.txt")
-            print(f"   Company files: {len(company_files)}")
-            for f in company_files[:3]:  # Show first 3
-                print(f"     - {os.path.basename(f)}")
-                
+            print(f"   Company files available: {len(company_files)}")
         else:
-            print("   ✅ Documents successfully ingested!")
+            print("   ✅ Documents successfully ingested with Google embeddings!")
+            
+            # Test similarity search
+            print("\n5. Testing Similarity Search...")
+            results = vector_store.similarity_search("AI technology", k=2)
+            print(f"   Search results: {len(results)} documents found")
+            if results:
+                print(f"   Top result similarity: {results[0]['similarity']:.3f}")
             
     except Exception as e:
         print(f"   ❌ Error during initialization: {e}")
@@ -86,4 +83,4 @@ def debug_ingestion_fixed():
         traceback.print_exc()
 
 if __name__ == "__main__":
-    debug_ingestion_fixed()
+    debug_ingestion()

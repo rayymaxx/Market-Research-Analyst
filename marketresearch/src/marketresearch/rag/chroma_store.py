@@ -6,14 +6,14 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 from typing import List, Dict, Any, Optional
-from .huggingface_embeddings import HuggingFaceEmbeddings
+from .google_embeddings import GoogleEmbeddings
 
 class ChromaVectorStore:
     """ChromaDB vector store with metadata support"""
     
     def __init__(self, knowledge_base_path: str = "./knowledge", collection_name: str = "market_research"):
         self.knowledge_base_path = knowledge_base_path
-        self.embeddings = HuggingFaceEmbeddings()
+        self.embeddings = GoogleEmbeddings()
         # Use environment variable or default to marketresearch/chroma_db
         chroma_path = os.getenv('CHROMA_DB_PATH', './chroma_db')
         if not os.path.isabs(chroma_path):
