@@ -50,8 +50,8 @@ async def startup_event():
     """Initialize the research system on startup"""
     try:
         # Initialize services
-        ResearchService.get_crew()
-        KnowledgeService.get_rag_factory()
+        # ResearchService.get_crew()
+        # KnowledgeService.get_rag_factory()
         print("✅ API Server initialized successfully")
     except Exception as e:
         print(f"❌ Failed to initialize API server: {e}")
