@@ -48,12 +48,16 @@ export const ProgressDashboard: React.FC<ProgressDashboardProps> = ({ research }
   if (!progress) return null;
 
   return (
-    <div className="space-y-6">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="space-y-6"
+    >
       <Card>
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h3 className="text-xl font-bold text-white">Research Progress</h3>
-            <p className="text-gray-400">Current Phase: {progress.current_phase}</p>
+            <h3 className="text-xl font-bold text-white">AI Crew Active</h3>
+            <p className="text-gray-400">{progress.current_phase}</p>
           </div>
           <div className="flex items-center gap-2">
             {getStatusIcon(research.status)}
@@ -62,65 +66,46 @@ export const ProgressDashboard: React.FC<ProgressDashboardProps> = ({ research }
         </div>
 
         <ProgressBar progress={progress.progress_percentage} />
-      </Card>
-
-      <Card>
-        <h4 className="text-lg font-semibold text-white mb-4">Agent Tasks</h4>
-        <div className="space-y-4">
-          {progress.tasks.map((task, index) => (
-            <motion.div
-              key={task.task_name}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.1 }}
-              className={`p-4 rounded-lg border ${
-                task.status === 'completed'
-                  ? 'bg-success-500/10 border-success-500/30'
-                  : task.status === 'running'
-                  ? 'bg-primary-500/10 border-primary-500/30'
-                  : task.status === 'failed'
-                  ? 'bg-red-500/10 border-red-500/30'
-                  : 'bg-dark-700 border-dark-600'
-              }`}
-            >
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-3">
-                  {getAgentIcon(task.agent)}
-                  <div>
-                    <h5 className="font-medium text-white">{task.agent}</h5>
-                    <p className="text-sm text-gray-400 capitalize">
-                      {task.task_name.replace(/_/g, ' ')}
-                    </p>
-                  </div>
-                </div>
-                {getStatusIcon(task.status)}
-              </div>
-
-              {task.tools_used.length > 0 && (
-                <div className="mt-3">
-                  <p className="text-xs text-gray-400 mb-1">Tools Used:</p>
-                  <div className="flex flex-wrap gap-1">
-                    {task.tools_used.map((tool) => (
-                      <span
-                        key={tool}
-                        className="px-2 py-1 bg-dark-600 text-xs text-gray-300 rounded"
-                      >
-                        {tool}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {task.start_time && (
-                <p className="text-xs text-gray-400 mt-2">
-                  Started: {new Date(task.start_time).toLocaleTimeString()}
-                </p>
-              )}
-            </motion.div>
-          ))}
+        
+        <div className="mt-4 text-center">
+          <p className="text-sm text-gray-400">
+            {research.status === 'running' ? 'Agents are working...' : 
+             research.status === 'completed' ? 'Research completed!' : 'Processing...'}
+          </p>
         </div>
       </Card>
-    </div>
+
+      {progress.tasks.length > 0 && (
+        <Card>
+          <h4 className="text-lg font-semibold text-white mb-4">Active Agents</h4>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {progress.tasks.map((task, index) => (
+              <motion.div
+                key={task.task_name}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.1 }}
+                className={`p-3 rounded-lg border text-center ${
+                  task.status === 'completed'
+                    ? 'bg-success-500/10 border-success-500/30'
+                    : task.status === 'running'
+                    ? 'bg-primary-500/10 border-primary-500/30'
+                    : 'bg-dark-700 border-dark-600'
+                }`}
+              >
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  {getAgentIcon(task.agent)}
+                  {getStatusIcon(task.status)}
+                </div>
+                <h5 className="font-medium text-white text-sm">{task.agent}</h5>
+                <p className="text-xs text-gray-400 capitalize">
+                  {task.task_name.replace(/_/g, ' ')}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </Card>
+      )}
+    </motion.div>
   );
-};
+};}

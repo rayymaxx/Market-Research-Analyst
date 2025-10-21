@@ -14,7 +14,7 @@ class MarketResearchCrew():
     """Market Research Analyst Crew with RAG-Enhanced Chains"""
     
     def __init__(self):
-        super(MarketResearchCrew, self).__init__()
+        super().__init__()
         # Initialize RAG-enhanced chain factory
         self.chain_factory = RAGEnhancedChainFactory("./knowledge")
         print("✅ RAG-Enhanced Chain Factory Initialized")
