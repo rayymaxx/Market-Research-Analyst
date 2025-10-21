@@ -133,7 +133,23 @@ class ResearchService:
                     await asyncio.sleep(0.5)  # Brief delay for UI updates
             
             # Convert CrewOutput to string safely
-            result_text = str(result.raw) if hasattr(result, 'raw') else str(result)
+            try:
+                if hasattr(result, 'raw') and result.raw:
+                    result_text = str(result.raw)
+                elif hasattr(result, 'output') and result.output:
+                    result_text = str(result.output)
+                elif hasattr(result, '__dict__'):
+                    # Try to get a meaningful string representation
+                    result_text = str(result.__dict__)
+                else:
+                    result_text = str(result)
+                
+                # Ensure it's a clean string (no complex objects)
+                if not isinstance(result_text, str):
+                    result_text = str(result_text)
+                    
+            except Exception as e:
+                result_text = f"Research completed but result serialization failed: {str(e)}"
             
             # Update final status
             cls.update_research_status(
