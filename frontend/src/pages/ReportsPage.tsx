@@ -222,7 +222,7 @@ export const ReportsPage: React.FC = () => {
       <PDFPreviewModal
         isOpen={showPDFPreview}
         onClose={() => setShowPDFPreview(false)}
-        pdfUrl={`/api/research/${currentReportId}/download-pdf`}
+        pdfUrl={`/api/research/${currentReportId}/preview-pdf`}
         researchId={currentReportId}
         onDownload={() => {
           const research = completedResearch.find(r => r.research_id === currentReportId);
