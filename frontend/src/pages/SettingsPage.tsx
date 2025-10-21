@@ -4,8 +4,11 @@ import { Save, RefreshCw, Bell, User } from 'lucide-react';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+import { CustomAlert } from '../components/ui/CustomAlert';
+import { useAlert } from '../hooks/useAlert';
 
 export const SettingsPage: React.FC = () => {
+  const { alert, showSuccess, showConfirm, closeAlert } = useAlert();
   const [settings, setSettings] = useState({
     notifications: localStorage.getItem('notifications') !== 'false',
     username: localStorage.getItem('username') || 'Developer',
@@ -16,7 +19,7 @@ export const SettingsPage: React.FC = () => {
     localStorage.setItem('notifications', settings.notifications.toString());
     localStorage.setItem('username', settings.username);
     localStorage.setItem('email', settings.email);
-    alert('Settings saved successfully!');
+    showSuccess('Settings Saved', 'Your settings have been saved successfully!');
   };
 
   const handleReset = () => {
@@ -29,10 +32,16 @@ export const SettingsPage: React.FC = () => {
   };
 
   const clearHistory = () => {
-    if (window.confirm('Are you sure you want to clear all research history?')) {
-      localStorage.removeItem('research_history');
-      alert('Research history cleared!');
-    }
+    showConfirm(
+      'Clear History',
+      'Are you sure you want to clear all research history? This action cannot be undone.',
+      () => {
+        localStorage.removeItem('research_history');
+        showSuccess('History Cleared', 'Research history has been cleared successfully!');
+      },
+      'Clear History',
+      'Cancel'
+    );
   };
 
   return (
@@ -115,6 +124,17 @@ export const SettingsPage: React.FC = () => {
           Reset to Defaults
         </Button>
       </div>
+
+      <CustomAlert
+        isOpen={alert.isOpen}
+        onClose={closeAlert}
+        onConfirm={alert.onConfirm}
+        title={alert.title}
+        message={alert.message}
+        type={alert.type}
+        confirmText={alert.confirmText}
+        cancelText={alert.cancelText}
+      />
     </div>
   );
 };

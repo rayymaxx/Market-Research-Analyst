@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Brain, Settings, User, Menu, X } from 'lucide-react';
+import { Brain, Settings, User, Menu, X, Info } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { useNavigate } from 'react-router-dom';
 import { Sidebar } from './Sidebar';
+import { InfoModal } from '../ui/InfoModal';
 
 export const Header: React.FC = () => {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showInfo, setShowInfo] = useState(false);
 
   return (
     <>
@@ -36,6 +38,10 @@ export const Header: React.FC = () => {
           </div>
           
           <div className="flex items-center gap-2">
+            <Button variant="ghost" size="sm" onClick={() => setShowInfo(true)}>
+              <Info className="w-4 h-4" />
+              <span className="hidden md:inline ml-2">Help</span>
+            </Button>
             <Button variant="ghost" size="sm" onClick={() => navigate('/settings')} className="hidden sm:flex">
               <Settings className="w-4 h-4" />
               <span className="hidden md:inline ml-2">Settings</span>
@@ -55,6 +61,8 @@ export const Header: React.FC = () => {
           </div>
         </div>
       )}
+      
+      <InfoModal isOpen={showInfo} onClose={() => setShowInfo(false)} />
     </>
   );
 };
