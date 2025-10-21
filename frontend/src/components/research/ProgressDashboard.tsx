@@ -108,4 +108,4 @@ export const ProgressDashboard: React.FC<ProgressDashboardProps> = ({ research }
       )}
     </motion.div>
   );
-};}
+};
