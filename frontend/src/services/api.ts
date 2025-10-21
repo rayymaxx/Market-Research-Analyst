@@ -2,6 +2,7 @@ import axios from 'axios';
 import { ResearchRequest, ResearchResponse, KnowledgeStats, UploadResponse, ResearchHistoryItem } from '../types';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+console.log('API_BASE_URL:', API_BASE_URL);
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -21,6 +22,7 @@ api.interceptors.request.use((config) => {
 
 export const researchApi = {
   startResearch: async (request: ResearchRequest): Promise<ResearchResponse> => {
+    console.log('Making request to:', `${API_BASE_URL}/research/start`);
     const response = await api.post('/research/start', request);
     return response.data;
   },

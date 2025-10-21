@@ -132,11 +132,14 @@ class ResearchService:
                     cls.update_task_progress(research_id, tasks[i + 1], TaskStatus.RUNNING)
                     await asyncio.sleep(0.5)  # Brief delay for UI updates
             
+            # Convert CrewOutput to string safely
+            result_text = str(result.raw) if hasattr(result, 'raw') else str(result)
+            
             # Update final status
             cls.update_research_status(
                 research_id, 
                 ResearchStatus.COMPLETED,
-                result=str(result)
+                result=result_text
             )
             
         except Exception as e:
