@@ -57,10 +57,15 @@ class ResearchService:
             if status == ResearchStatus.COMPLETED:
                 research.completed_at = datetime.now()
                 if 'result' in kwargs:
-                    research.result = kwargs['result']
+                    # Ensure result is always a string
+                    result = kwargs['result']
+                    if isinstance(result, str):
+                        research.result = result
+                    else:
+                        research.result = str(result)
             
             if status == ResearchStatus.FAILED and 'error' in kwargs:
-                research.error = kwargs['error']
+                research.error = str(kwargs['error'])
             
             if 'progress' in kwargs:
                 research.progress = kwargs['progress']
@@ -132,26 +137,19 @@ class ResearchService:
                     cls.update_task_progress(research_id, tasks[i + 1], TaskStatus.RUNNING)
                     await asyncio.sleep(0.5)  # Brief delay for UI updates
             
-            # Convert CrewOutput to string safely
+            # Convert result to plain string immediately
+            result_text = "Research completed successfully."
             try:
-                if hasattr(result, 'raw') and result.raw:
+                if hasattr(result, 'raw'):
                     result_text = str(result.raw)
-                elif hasattr(result, 'output') and result.output:
+                elif hasattr(result, 'output'):
                     result_text = str(result.output)
-                elif hasattr(result, '__dict__'):
-                    # Try to get a meaningful string representation
-                    result_text = str(result.__dict__)
                 else:
                     result_text = str(result)
-                
-                # Ensure it's a clean string (no complex objects)
-                if not isinstance(result_text, str):
-                    result_text = str(result_text)
-                    
-            except Exception as e:
-                result_text = f"Research completed but result serialization failed: {str(e)}"
+            except:
+                result_text = "Research completed - output conversion failed"
             
-            # Update final status
+            # Update final status with string result
             cls.update_research_status(
                 research_id, 
                 ResearchStatus.COMPLETED,

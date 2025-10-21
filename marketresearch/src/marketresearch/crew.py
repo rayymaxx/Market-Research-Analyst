@@ -224,15 +224,23 @@ class MarketResearchCrew():
         
         try:
             # Execute the crew with enhanced context
-            result = self.crew().kickoff(inputs=inputs)
+            crew_result = self.crew().kickoff(inputs=inputs)
+            
+            # Convert CrewOutput to string immediately
+            if hasattr(crew_result, 'raw'):
+                result_text = str(crew_result.raw)
+            elif hasattr(crew_result, 'output'):
+                result_text = str(crew_result.output)
+            else:
+                result_text = str(crew_result)
             
             # Convert result to PDF if it's markdown
-            if isinstance(result, str) and result.strip():
+            if result_text and result_text.strip():
                 from .utils.pdf_converter import convert_md_to_pdf
                 research_id = inputs.get('research_id', inputs['research_topic'].replace(' ', '_'))
                 pdf_path = f"research_report_{research_id}.pdf"
                 try:
-                    convert_md_to_pdf(str(result), pdf_path)
+                    convert_md_to_pdf(result_text, pdf_path)
                     print(f"📄 PDF report generated: {pdf_path}")
                 except Exception as pdf_error:
                     print(f"⚠️ PDF conversion failed: {pdf_error}")
@@ -247,12 +255,12 @@ class MarketResearchCrew():
             self.research_progress['completed_tasks'] = ['all']
             self.research_progress['current_phase'] = 'completed'
             
-            # Cache the result
-            research_cache.set(cache_key, result)
+            # Cache the string result, not the CrewOutput
+            research_cache.set(cache_key, result_text)
             print(f"📋 Research result cached for future use")
             
             print("✅ Research session saved to memory")
-            return result
+            return result_text
             
         except Exception as e:
             print(f"❌ Research failed: {str(e)}")
